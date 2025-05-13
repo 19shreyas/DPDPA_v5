@@ -562,22 +562,54 @@ elif menu == "Policy Compliance Checker":
     
             st.markdown("---")
             if results:
-                df = pd.DataFrame(results)
+                # Flatten results for table display (avoid [object Object])
+                flat_data = [
+                    {
+                        "DPDPA Section": row["DPDPA Section"],
+                        "Meaning": row["DPDPA Section Meaning"],
+                        "Match Level": row["Match Level"],
+                        "Severity": row.get("Severity", ""),
+                        "Score": row.get("Compliance Points", "")
+                    }
+                    for row in results
+                ]
+                df = pd.DataFrame(flat_data)
+            
+                # Display clean table
                 st.success("✅ Full Analysis Complete!")
-                st.dataframe(df)
-    
+                st.dataframe(df.style.set_properties(**{
+                    'background-color': 'white',
+                    'color': 'black'
+                }))
+            
+                # Show detailed expanders
+                for row in results:
+                    with st.expander(f"🔍 {row['DPDPA Section']} — Full Checklist & Suggestions"):
+                        st.markdown(f"**Meaning:** {row['DPDPA Section Meaning']}")
+                        st.markdown(f"**Match Level:** {row['Match Level']} | **Severity:** {row.get('Severity', '')}")
+                        st.markdown("**Checklist Items:**")
+                        for item in row["Checklist Items"]:
+                            st.markdown(f"- **{item['Item']}** → Matched: **{item['Matched']}**")
+                            st.markdown(f"  - Sentences: {item['Matched Sentences']}")
+                            st.markdown(f"  - Justification: {item['Justification']}")
+                        st.markdown("**Suggested Rewrite:**")
+                        st.markdown(row["Suggested Rewrite"])
+            
+                # Excel Download
                 excel_filename = "DPDPA_Compliance_Report.xlsx"
                 df.to_excel(excel_filename, index=False)
                 with open(excel_filename, "rb") as f:
                     st.download_button("📥 Download Excel", f, file_name=excel_filename)
-    
+            
+                # Score
                 try:
-                    scored_points = df['Compliance Points'].astype(float).sum()
+                    scored_points = df['Score'].astype(float).sum()
                     total_points = len(dpdpa_sections)
                     score = (scored_points / total_points) * 100
                     st.metric("🎯 Overall Compliance", f"{score:.2f}%")
                 except:
                     st.warning("⚠️ Could not compute score. Check data types.")
+
         else:
             st.warning("⚠️ Please paste policy text to proceed.")
 
