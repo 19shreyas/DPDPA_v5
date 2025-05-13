@@ -551,7 +551,7 @@ elif menu == "Policy Compliance Checker":
             results = []
             with st.spinner("Running GPT-based compliance evaluation..."):
                 for section in dpdpa_sections:
-                    st.markdown(f"#### 🔍 Analyzing: {section}")
+                    st.markdown(f"##### Analyzing: {section}")
                     try:
                         section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
                         parsed_section = json.loads(section_response)
