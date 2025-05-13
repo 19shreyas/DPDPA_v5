@@ -613,12 +613,6 @@ elif menu == "Policy Compliance Checker":
         else:
             st.warning("⚠️ Please paste policy text to proceed.")
 
-    #st.header("6. Generate / Export Output")
-    st.markdown("<h3 style='font-size:24px; font-weight:700;'>6. Generate / Export Output</h3>", unsafe_allow_html=True)
-    export_format = st.selectbox("Choose export format", ["PDF", "CSV", "JSON"])
-    if st.button("Download Output"):
-        st.success("Export ready (simulated). File will include compliance results and recommendations.")
-
 # --- Dashboard & Reports ---
 elif menu == "Dashboard & Reports":
     st.title("Dashboard & Reports")
