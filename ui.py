@@ -433,6 +433,12 @@ def set_custom_css():
         color: #2E2E38 !important;
     }
 
+    /* Force DataFrame cell background and text to be readable */
+.css-1r6slb0 .element-container {
+        background-color: white !important;
+        color: black !important;
+    }
+
 
     </style>
     """, unsafe_allow_html=True)
