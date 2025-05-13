@@ -541,39 +541,39 @@ elif menu == "Policy Compliance Checker":
     #st.header("5. Run Compliance Check")
     st.markdown("<h3 style='font-size:24px; font-weight:700;'>5. Run Compliance Check</h3>", unsafe_allow_html=True)
     if st.button("Run Compliance Check"):
-    if policy_text:
-        results = []
-        with st.spinner("Running GPT-based compliance evaluation..."):
-            for section in dpdpa_sections:
-                st.markdown(f"#### 🔍 Analyzing: {section}")
+        if policy_text:
+            results = []
+            with st.spinner("Running GPT-based compliance evaluation..."):
+                for section in dpdpa_sections:
+                    st.markdown(f"#### 🔍 Analyzing: {section}")
+                    try:
+                        section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
+                        parsed_section = json.loads(section_response)
+                        results.append(parsed_section)
+                        st.success(f"✅ Completed: {section}")
+                    except Exception as e:
+                        st.error(f"❌ Error analyzing {section}: {e}")
+    
+            st.markdown("---")
+            if results:
+                df = pd.DataFrame(results)
+                st.success("✅ Full Analysis Complete!")
+                st.dataframe(df)
+    
+                excel_filename = "DPDPA_Compliance_Report.xlsx"
+                df.to_excel(excel_filename, index=False)
+                with open(excel_filename, "rb") as f:
+                    st.download_button("📥 Download Excel", f, file_name=excel_filename)
+    
                 try:
-                    section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
-                    parsed_section = json.loads(section_response)
-                    results.append(parsed_section)
-                    st.success(f"✅ Completed: {section}")
-                except Exception as e:
-                    st.error(f"❌ Error analyzing {section}: {e}")
-
-        st.markdown("---")
-        if results:
-            df = pd.DataFrame(results)
-            st.success("✅ Full Analysis Complete!")
-            st.dataframe(df)
-
-            excel_filename = "DPDPA_Compliance_Report.xlsx"
-            df.to_excel(excel_filename, index=False)
-            with open(excel_filename, "rb") as f:
-                st.download_button("📥 Download Excel", f, file_name=excel_filename)
-
-            try:
-                scored_points = df['Compliance Points'].astype(float).sum()
-                total_points = len(dpdpa_sections)
-                score = (scored_points / total_points) * 100
-                st.metric("🎯 Overall Compliance", f"{score:.2f}%")
-            except:
-                st.warning("⚠️ Could not compute score. Check data types.")
-    else:
-        st.warning("⚠️ Please paste policy text to proceed.")
+                    scored_points = df['Compliance Points'].astype(float).sum()
+                    total_points = len(dpdpa_sections)
+                    score = (scored_points / total_points) * 100
+                    st.metric("🎯 Overall Compliance", f"{score:.2f}%")
+                except:
+                    st.warning("⚠️ Could not compute score. Check data types.")
+        else:
+            st.warning("⚠️ Please paste policy text to proceed.")
 
     #st.header("6. Generate / Export Output")
     st.markdown("<h3 style='font-size:24px; font-weight:700;'>6. Generate / Export Output</h3>", unsafe_allow_html=True)
