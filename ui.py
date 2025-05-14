@@ -14,9 +14,7 @@ dpdpa_sections = [
     "Section 5 — Notice",
     "Section 6 — Consent",
     "Section 7 — Certain Legitimate Uses",
-    "Section 8 — General Obligations of Data Fiduciary",
-    "Section 9 — Processing of Personal Data of Children",
-    "Section 10 — Additional Obligations of Significant Data Fiduciaries"
+    "Section 8 — General Obligations of Data Fiduciary"
 ]
 
 # --- DPDPA Legal Text ---
@@ -98,27 +96,7 @@ Sub-section (10) of Section 8. - Establish an effective grievance redressal mech
 
 Sub-section (11) of Section 8. - Clarification: lack of contact by Data Principal within time period implies specified purpose is no longer served.
 
-Section 9. Processing of personal data of children.
-Sub-section (1) of Section 9. - Before processing, obtain verifiable parental or guardian consent.
-
-Sub-section (2) of Section 9. - No detrimental processing that harms the child's well-being.
-
-Sub-section (3) of Section 9. - No tracking, behavioural monitoring, or targeted advertising to children.
-
-Sub-section (4) of Section 9. - Exemptions may be prescribed for certain Data Fiduciaries or purposes.
-
-Sub-section (5) of Section 9. - Safe processing standards may allow higher age exemptions.
-
-Section 10. Additional obligations of Significant Data Fiduciaries.
-Sub-section (1) of Section 10. - Significant Data Fiduciaries notified by Government based on volume, sensitivity, sovereignty impact, etc.
-
-Sub-section (2) of Section 10. - Must:
-  (a) Appoint a Data Protection Officer (DPO) based in India, responsible to the Board.
-  (b) Appoint an independent Data Auditor.
-  (c) Undertake:
-    (i) Periodic Data Protection Impact Assessments,
-    (ii) Periodic audits,
-    (iii) Other prescribed compliance measures."""
+"""
 
 # --- GPT Function ---
 def analyze_section(section_text, policy_text, full_chapter_text):
@@ -273,34 +251,8 @@ Processing without consent is allowed **only** if it meets the following (tick a
    * ☐ Also instruct Data Processor to erase it.
 8. ☐ Define time periods for retention based on inactivity of Data Principal.
 9. ☐ Publish business contact info of DPO or responsible officer.
-10. ☐ Establish a grievance redressal mechanism.
-
-**Section 9: Processing Children’s Data**
-
-1. ☐ Verifiable **parental/guardian consent** is obtained before processing data of:
-
-   * ☐ Children (<18 years)
-   * ☐ Persons with lawful guardians
-2. ☐ No processing that causes **detrimental effect** to child’s well-being.
-3. ☐ No **tracking, behavioral monitoring**, or **targeted advertising** directed at children.
-4. ☐ Follow any **exemptions** as notified (for class of fiduciaries or safe processing).
-5. ☐ Central Govt. may relax obligations if processing is **verifiably safe** and meets minimum age threshold.
-
-**Section 10: Significant Data Fiduciary (SDF) Obligations**
-
-Only applies if declared as SDF:
-
-1. ☐ Appoint a **Data Protection Officer (DPO)**:
-
-   * ☐ Based in India
-   * ☐ Reports to board/similar authority
-   * ☐ Point of contact for grievance redressal
-2. ☐ Appoint an **independent Data Auditor**.
-3. ☐ Conduct:
-
-   * ☐ Periodic **Data Protection Impact Assessments**
-   * ☐ **Audits** of data processing
-   * ☐ Any other measures as may be prescribed"""
+10. ☐ Establish a grievance redressal mechanism."""
+    
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
@@ -532,7 +484,7 @@ elif menu == "Policy Compliance Checker":
     if scope == "Custom Sections":
         custom_sections = st.multiselect("Select specific sections to match against", [
         "Section 4 — Grounds for Processing Personal Data", "Section 5 — Notice", "Section 6 — Consent", "Section 7 — Certain Legitimate Uses",
-        "Section 8 — General Obligations of Data Fiduciary", "Section 9 — Processing of Personal Data of Children", "Section 10 — Additional Obligations of Significant Data Fiduciaries"])
+        "Section 8 — General Obligations of Data Fiduciary"])
     else:
         custom_sections = []
 
