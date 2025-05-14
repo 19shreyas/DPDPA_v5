@@ -208,6 +208,256 @@ section_8_checklist = [
 ]
 
 # --- Sentence-wise GPT match function ---
+    
+def match_sentence_to_checklist4(sentence, checklist_items):
+    prompt = f"""
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 4 (Grounds for Processing Personal Data)of the Digital Personal Data Protection Act, 2023 (India).
+
+    ---
+    
+    **Policy Sentence:**
+    \"{sentence}\"
+    
+    ---
+    
+    **Checklist Items:**
+    {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
+    
+    ---
+    
+    **Important Instructions:**
+    
+    1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
+    2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
+    3. DO NOT mark a sentence as a match if it:
+       
+    Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+    
+    DO NOT match if:
+    - The sentence **implies** or **suggests** compliance without clearly stating it.
+    
+    ✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
+    
+    > **Ask yourself for each match:**  
+    > “Would a data protection auditor accept this as proof of compliance for this clause?”  
+    > If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
+    
+    ---
+    
+    Please return your response strictly in the following JSON format:
+    
+    {{
+      "Matched Items": [
+        {{
+          "Checklist Item": "...",
+          "Justification": "..."
+        }}
+      ]
+    }}
+    
+    If no checklist item is clearly satisfied, return: "Matched Items": []
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    return json.loads(response.choices[0].message.content)
+
+
+# --- Full analyzer using sentence loop for Section 4 only ---
+def analyze_policy_section4(policy_text):
+    policy_sentences = sent_tokenize(policy_text)
+    match_results = []
+
+    for sentence in policy_sentences:
+        if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
+            continue
+        result = match_sentence_to_checklist4(sentence, section_4_checklist)
+        for match in result.get("Matched Items", []):
+            match_results.append({
+                "Sentence": sentence.strip(),
+                "Checklist Item": match["Checklist Item"].strip(),
+                "Justification": match["Justification"].strip()
+            })
+
+    # Deduplicate matched checklist items
+    matched_items = {}
+    for r in match_results:
+        if r["Checklist Item"] not in matched_items:
+            matched_items[r["Checklist Item"]] = r
+
+    matched_count = len(matched_items)
+    total_items = len(section_4_checklist)
+
+    # Classification logic
+    if matched_count == total_items:
+        match_level = "Fully Compliant"
+        points = 1.0
+        severity = "N/A"
+    elif matched_count == 0:
+        match_level = "Non-Compliant"
+        points = 0.0
+        severity = "Major"
+    elif matched_count == 1:
+        match_level = "Partially Compliant"
+        points = 0.75
+        severity = "Minor"
+    elif matched_count <= 3:
+        match_level = "Partially Compliant"
+        points = 0.5
+        severity = "Medium"
+    else:
+        match_level = "Partially Compliant"
+        points = 0.25
+        severity = "Major"
+
+    # Suggested Rewrites
+    missing_items = [item for item in section_4_checklist if item not in matched_items]
+    if missing_items:
+        suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
+            "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
+    else:
+        suggested_rewrite = "All checklist items are covered."
+
+    # Final Output
+    final_output = {
+        "DPDPA Section": "Section 4 — Grounds for Processing Personal Data",
+        "DPDPA Section Meaning": "",
+        "Checklist Items Matched": list(set(matched_items.keys())),
+        "Matched Sentences": list(matched_items.values()),
+        "Match Level": match_level,
+        "Severity": severity,
+        "Compliance Points": points,
+        "Suggested Rewrite": suggested_rewrite
+    }
+    return final_output
+def match_sentence_to_checklist5(sentence, checklist_items):
+    prompt = f"""
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 5 (Notice) of the Digital Personal Data Protection Act, 2023 (India).
+
+    ---
+    
+    **Policy Sentence:**
+    \"{sentence}\"
+    
+    ---
+    
+    **Checklist Items:**
+    {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
+    
+    ---
+    
+    **Important Instructions:**
+    
+    1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
+    2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
+    3. DO NOT mark a sentence as a match if it:
+       
+    Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+    
+    DO NOT match if:
+    - The sentence **implies** or **suggests** compliance without clearly stating it.
+    
+    ✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
+    
+    > **Ask yourself for each match:**  
+    > “Would a data protection auditor accept this as proof of compliance for this clause?”  
+    > If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
+    
+    ---
+    
+    Please return your response strictly in the following JSON format:
+    
+    {{
+      "Matched Items": [
+        {{
+          "Checklist Item": "...",
+          "Justification": "..."
+        }}
+      ]
+    }}
+    
+    If no checklist item is clearly satisfied, return: "Matched Items": []
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    return json.loads(response.choices[0].message.content)
+
+
+# --- Full analyzer using sentence loop for Section 4 only ---
+def analyze_policy_section5(policy_text):
+    policy_sentences = sent_tokenize(policy_text)
+    match_results = []
+
+    for sentence in policy_sentences:
+        if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
+            continue
+        result = match_sentence_to_checklist5(sentence, section_5_checklist)
+        for match in result.get("Matched Items", []):
+            match_results.append({
+                "Sentence": sentence.strip(),
+                "Checklist Item": match["Checklist Item"].strip(),
+                "Justification": match["Justification"].strip()
+            })
+
+    # Deduplicate matched checklist items
+    matched_items = {}
+    for r in match_results:
+        if r["Checklist Item"] not in matched_items:
+            matched_items[r["Checklist Item"]] = r
+
+    matched_count = len(matched_items)
+    total_items = len(section_5_checklist)
+
+    # Classification logic
+    if matched_count == total_items:
+        match_level = "Fully Compliant"
+        points = 1.0
+        severity = "N/A"
+    elif matched_count == 0:
+        match_level = "Non-Compliant"
+        points = 0.0
+        severity = "Major"
+    elif matched_count == 1:
+        match_level = "Partially Compliant"
+        points = 0.75
+        severity = "Minor"
+    elif matched_count <= 3:
+        match_level = "Partially Compliant"
+        points = 0.5
+        severity = "Medium"
+    else:
+        match_level = "Partially Compliant"
+        points = 0.25
+        severity = "Major"
+
+    # Suggested Rewrites
+    missing_items = [item for item in section_5_checklist if item not in matched_items]
+    if missing_items:
+        suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
+            "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
+    else:
+        suggested_rewrite = "All checklist items are covered."
+
+    # Final Output
+    final_output = {
+        "DPDPA Section": "Section 5 — Notice",
+        "DPDPA Section Meaning": "",
+        "Checklist Items Matched": list(set(matched_items.keys())),
+        "Matched Sentences": list(matched_items.values()),
+        "Match Level": match_level,
+        "Severity": severity,
+        "Compliance Points": points,
+        "Suggested Rewrite": suggested_rewrite
+    }
+    return final_output
+
 def match_sentence_to_checklist6(sentence, checklist_items):
     prompt = f"""
     You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 6 (Consent and Its Management)of the Digital Personal Data Protection Act, 2023 (India).
@@ -353,9 +603,9 @@ def analyze_policy_section6(policy_text):
     }
     return final_output
     
-def match_sentence_to_checklist4(sentence, checklist_items):
+def match_sentence_to_checklist7(sentence, checklist_items):
     prompt = f"""
-    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 4 (Grounds for Processing Personal Data)of the Digital Personal Data Protection Act, 2023 (India).
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 7 (Certain Legitimate Uses) of the Digital Personal Data Protection Act, 2023 (India).
 
     ---
     
@@ -411,14 +661,14 @@ def match_sentence_to_checklist4(sentence, checklist_items):
 
 
 # --- Full analyzer using sentence loop for Section 6 only ---
-def analyze_policy_section4(policy_text):
+def analyze_policy_section7(policy_text):
     policy_sentences = sent_tokenize(policy_text)
     match_results = []
 
     for sentence in policy_sentences:
         if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
             continue
-        result = match_sentence_to_checklist6(sentence, section_6_checklist)
+        result = match_sentence_to_checklist7(sentence, section_7_checklist)
         for match in result.get("Matched Items", []):
             match_results.append({
                 "Sentence": sentence.strip(),
@@ -433,7 +683,7 @@ def analyze_policy_section4(policy_text):
             matched_items[r["Checklist Item"]] = r
 
     matched_count = len(matched_items)
-    total_items = len(section_6_checklist)
+    total_items = len(section_7_checklist)
 
     # Classification logic
     if matched_count == total_items:
@@ -458,7 +708,7 @@ def analyze_policy_section4(policy_text):
         severity = "Major"
 
     # Suggested Rewrites
-    missing_items = [item for item in section_6_checklist if item not in matched_items]
+    missing_items = [item for item in section_7_checklist if item not in matched_items]
     if missing_items:
         suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
             "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
@@ -467,7 +717,132 @@ def analyze_policy_section4(policy_text):
 
     # Final Output
     final_output = {
-        "DPDPA Section": "Section 4 — Grounds for Processing Personal Data",
+        "DPDPA Section": "Section 7 — Certain Legitimate Uses",
+        "DPDPA Section Meaning": "",
+        "Checklist Items Matched": list(set(matched_items.keys())),
+        "Matched Sentences": list(matched_items.values()),
+        "Match Level": match_level,
+        "Severity": severity,
+        "Compliance Points": points,
+        "Suggested Rewrite": suggested_rewrite
+    }
+    return final_output
+    
+def match_sentence_to_checklist8(sentence, checklist_items):
+    prompt = f"""
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 8 (General Obligations of Data Fiduciary) of the Digital Personal Data Protection Act, 2023 (India).
+
+    ---
+    
+    **Policy Sentence:**
+    \"{sentence}\"
+    
+    ---
+    
+    **Checklist Items:**
+    {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
+    
+    ---
+    
+    **Important Instructions:**
+    
+    1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
+    2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
+    3. DO NOT mark a sentence as a match if it:
+       
+    Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+    
+    DO NOT match if:
+    - The sentence **implies** or **suggests** compliance without clearly stating it.
+    
+    ✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
+    
+    > **Ask yourself for each match:**  
+    > “Would a data protection auditor accept this as proof of compliance for this clause?”  
+    > If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
+    
+    ---
+    
+    Please return your response strictly in the following JSON format:
+    
+    {{
+      "Matched Items": [
+        {{
+          "Checklist Item": "...",
+          "Justification": "..."
+        }}
+      ]
+    }}
+    
+    If no checklist item is clearly satisfied, return: "Matched Items": []
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    return json.loads(response.choices[0].message.content)
+
+
+# --- Full analyzer using sentence loop for Section 6 only ---
+def analyze_policy_section8(policy_text):
+    policy_sentences = sent_tokenize(policy_text)
+    match_results = []
+
+    for sentence in policy_sentences:
+        if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
+            continue
+        result = match_sentence_to_checklist8(sentence, section_8_checklist)
+        for match in result.get("Matched Items", []):
+            match_results.append({
+                "Sentence": sentence.strip(),
+                "Checklist Item": match["Checklist Item"].strip(),
+                "Justification": match["Justification"].strip()
+            })
+
+    # Deduplicate matched checklist items
+    matched_items = {}
+    for r in match_results:
+        if r["Checklist Item"] not in matched_items:
+            matched_items[r["Checklist Item"]] = r
+
+    matched_count = len(matched_items)
+    total_items = len(section_8_checklist)
+
+    # Classification logic
+    if matched_count == total_items:
+        match_level = "Fully Compliant"
+        points = 1.0
+        severity = "N/A"
+    elif matched_count == 0:
+        match_level = "Non-Compliant"
+        points = 0.0
+        severity = "Major"
+    elif matched_count == 1:
+        match_level = "Partially Compliant"
+        points = 0.75
+        severity = "Minor"
+    elif matched_count <= 3:
+        match_level = "Partially Compliant"
+        points = 0.5
+        severity = "Medium"
+    else:
+        match_level = "Partially Compliant"
+        points = 0.25
+        severity = "Major"
+
+    # Suggested Rewrites
+    missing_items = [item for item in section_8_checklist if item not in matched_items]
+    if missing_items:
+        suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
+            "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
+    else:
+        suggested_rewrite = "All checklist items are covered."
+
+    # Final Output
+    final_output = {
+        "DPDPA Section": "Section 8 — General Obligations of Data Fiduciary",
         "DPDPA Section Meaning": "",
         "Checklist Items Matched": list(set(matched_items.keys())),
         "Matched Sentences": list(matched_items.values()),
