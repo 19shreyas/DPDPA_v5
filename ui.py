@@ -123,7 +123,11 @@ INSTRUCTIONS:
    - For each checklist item do following- 
       - Go through the policy *sentence by sentence* and see if that sentence addresses the checklist item.
       - **Only count an item as covered if it is explicitly and clearly mentioned in the policy with correct context. Vague, generic, or partial references must be marked as unmatched. Do not assume implied meaning — legal clarity is required.**
-      - Do not make assumptions.
+      - Do not make assumptions or stretch interpretations.
+      - Do not assume that generic statements (e.g., "we improve services") imply security, consent, breach notifications, etc.
+      - Only match if the sentence **explicitly and clearly refers** to the legal requirement in the checklist.
+      - If a sentence does **not** clearly mention keywords like “security,” “data breach,” “firewall,” “encryption,” or similar — it should **not** be matched for a checklist item about breach safeguards.
+
       - This needs to be shown in the output - "Checklist Items" - In this -  mention the checklist item, whether it matches or not, the sentence/s from policy to which this checklist item matches and what is the justification for it getting matched.
 
 3. **Classification**
