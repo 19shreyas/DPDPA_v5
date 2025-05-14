@@ -97,6 +97,20 @@ Sub-section (10) of Section 8. - Establish an effective grievance redressal mech
 Sub-section (11) of Section 8. - Clarification: lack of contact by Data Principal within time period implies specified purpose is no longer served.
 
 """
+def validate_matches(gpt_output, policy_text):
+    """Check that all GPT-claimed matched sentences exist in the actual policy."""
+    for item in gpt_output["Checklist Items"]:
+        valid_sentences = []
+        for sentence in item["Matched Sentences"]:
+            if sentence in policy_text:
+                valid_sentences.append(sentence)
+        if not valid_sentences:
+            item["Matched"] = False
+            item["Matched Sentences"] = []
+            item["Justification"] = (
+                "Original sentence not found in policy. Marked as unmatched."
+            )
+    return gpt_output
 
 # --- GPT Function ---
 def analyze_section(section_text, policy_text, full_chapter_text):
@@ -516,8 +530,11 @@ elif menu == "Policy Compliance Checker":
                     try:
                         section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
                         parsed_section = json.loads(section_response)
-                        results.append(parsed_section)
+                        validated_section = validate_matches(parsed_section, policy_text)
+                    
+                        results.append(validated_section)
                         st.success(f"✅ Completed: {section}")
+
                     except Exception as e:
                         st.error(f"❌ Error analyzing {section}: {e}")
     
