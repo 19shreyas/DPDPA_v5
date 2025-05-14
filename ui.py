@@ -103,104 +103,178 @@ Sub-section (10) of Section 8. - Establish an effective grievance redressal mech
 Sub-section (11) of Section 8. - Clarification: lack of contact by Data Principal within time period implies specified purpose is no longer served.
 
 """
-def validate_matches(gpt_output, policy_text):
-    """Check that all GPT-claimed matched sentences exist in the actual policy."""
-    for item in gpt_output["Checklist Items"]:
-        valid_sentences = []
-        for sentence in item["Matched Sentences"]:
-            if sentence in policy_text:
-                valid_sentences.append(sentence)
-        if not valid_sentences:
-            item["Matched"] = False
-            item["Matched Sentences"] = []
-            item["Justification"] = (
-                "Original sentence not found in policy. Marked as unmatched."
-            )
-    return gpt_output
-
+section_4_checklist = [
+    "Personal data is processed only for a lawful purpose.",
+    "Lawful purpose means a purpose not expressly forbidden by law.",
+    "Lawful purpose must be backed by explicit consent from the Data Principal or fall under legitimate uses.",
+]
+section_5_checklist = [
+    "A notice is given before or at the time of requesting consent.",
+    "Notice clearly mentions what personal data is being collected.",
+    "Notice clearly mentions the purpose for which the personal data is proposed to be processed.",
+    "Notice describes how the Data Principal can exercise her rights under Section 6(4) and Section 13.",
+    "Notice explains how the Data Principal can file a complaint with the Data Protection Board.",
+    "For data collected before commencement of the Act, retrospective notice is given as soon as reasonably practicable.",
+    "Retrospective notice includes: data processed, purpose, rights under Section 6(4) and 13, and complaint mechanism.",
+    "Data Fiduciary may continue processing pre-Act personal data until consent is withdrawn.",
+    "Notice must be available in English or any language under the Eighth Schedule of the Constitution."
+]
 
 # --- Section 6 Checklist ---
 section_6_checklist = [
-    "Consent is free, specific, informed, unconditional, and unambiguous.",
-    "Consent is given via clear affirmative action.",
-    "Consent is limited to specified purpose only.",
-    "Consent can be withdrawn at any time.",
-    "Data Fiduciary shall cease processing upon withdrawal (unless legally required).",
-    "Consent Manager is registered and functions independently.",
-    "Consent Manager allows giving, managing, and withdrawing consent easily.",
-    "Consent Manager logs consent history for audit.",
-    "Data Fiduciary must honor withdrawal requests promptly.",
-    "Retention of personal data stops unless required by law."
+    # A. Nature and Validity of Consent (Section 6(1))
+    "Consent is free — voluntarily given, not coerced or forced.",
+    "Consent is specific to a clearly defined purpose.",
+    "Consent is informed — based on full disclosure before collection.",
+    "Consent is unconditional — not bundled with unrelated terms.",
+    "Consent is unambiguous — clear in intent and meaning.",
+    "Consent is given through clear affirmative action (e.g., ticking a box, clicking 'I agree').",
+    "Consent is limited strictly to the specified purpose.",
+    "Only personal data necessary for the specified purpose is processed.",
+
+    # B. Consent Request Requirements (Section 6(3))
+    "Consent request is written in clear and plain language.",
+    "Consent request is available in English or one of the 22 Eighth Schedule languages.",
+    "Consent request includes contact details of the Data Protection Officer (DPO) or authorized representative.",
+
+    # C. Legal Integrity of Consent (Section 6(2))
+    "Any clause in the consent request that infringes on the Act is void to that extent.",
+
+    # D. Withdrawal and Post-Withdrawal Compliance (Section 6(4), 6(5), 6(6))
+    "Consent can be withdrawn at any time by the Data Principal.",
+    "Consequences of withdrawal (e.g., loss of service) are borne by the Data Principal.",
+    "Withdrawal does not affect the legality of processing done before the withdrawal.",
+    "Processing of personal data must stop upon withdrawal, unless legally mandated to continue.",
+
+    # E. Consent Manager Requirements (Section 6(7), 6(8), 6(9))
+    "Consent can be given, managed, and withdrawn through a Consent Manager.",
+    "Consent Manager acts on behalf of the Data Principal and is accountable to them.",
+    "Consent Manager is registered with the Data Protection Board of India.",
+    "Consent Manager enables easy management of consent (granting, auditing, withdrawing).",
+
+    # F. Record-Keeping and Proof of Validity (Section 6(10))
+    "Data Fiduciary must demonstrate that valid notice was provided to the Data Principal.",
+    "Data Fiduciary must prove that consent was validly obtained."
+]
+section_7_checklist = [
+    "Personal data is processed without consent only if it falls within specific legal grounds under Section 7.",
+    "Each legitimate use must be necessary, proportionate, and in accordance with applicable laws or standards.",
+
+    # (a) Voluntary Provision
+    "Data Principal voluntarily provided personal data for a specified purpose and did not object to its use for that purpose.",
+
+    # (b) State-Issued Subsidies/Benefits
+    "Processing is done by the State or its instrumentalities to issue a subsidy, benefit, service, certificate, licence or permit.",
+    "Data Principal has previously consented for such processing by the State or its instrumentalities.",
+    "Personal data is sourced from officially maintained registers or databases and notified by the Central Government.",
+    "Processing follows standards or policies notified by the Central Government or law for personal data governance.",
+
+    # (c) State Function
+    "Processing is necessary for the performance of any legal function by the State or its instrumentalities related to sovereignty, integrity, or security of India.",
+
+    # (d) Statutory Obligation
+    "Processing is required under any law for disclosing information to the State or its instrumentalities, subject to applicable provisions.",
+
+    # (e) Court Order
+    "Processing is required to comply with a judgment, decree, or order under Indian or foreign law related to civil or contractual claims.",
+
+    # (f) Medical Emergency
+    "Processing is required to respond to a medical emergency involving threat to life or health of the Data Principal or another person.",
+
+    # (g) Epidemic or Public Health
+    "Processing is required to provide medical treatment or health services during an epidemic, outbreak, or other public health threat.",
+
+    # (h) Disaster or Public Order
+    "Processing is required to ensure safety or provide assistance or services during a disaster or public order breakdown.",
+    "Disaster is as defined under clause (d) of Section 2 of the Disaster Management Act, 2005.",
+
+    # (i) Employment-Related Purposes
+    "Processing is necessary for employment-related purposes or to safeguard the employer from loss or liability.",
+    "Examples include prevention of corporate espionage, protection of IP, or provision of services/benefits to employees."
+]
+section_8_checklist = [
+    "Data Fiduciary is accountable for compliance with the Act even if processing is done by a Data Processor.",
+    "Data Fiduciary may engage a Data Processor only under a valid contract.",
+    "If personal data is used to make decisions about or is disclosed to another Fiduciary, ensure completeness, accuracy, and consistency.",
+    "Implement appropriate technical and organisational measures to ensure compliance with the Act and rules.",
+    "Ensure reasonable security safeguards to prevent personal data breaches.",
+    "Notify the Board and affected Data Principals of a personal data breach in prescribed form and manner.",
+    "Erase personal data upon withdrawal of consent or if the specified purpose is no longer being served, unless retention is legally required.",
+    "Cause Data Processor to erase data shared with them once consent is withdrawn or purpose is no longer served.",
+    "The purpose is deemed no longer served if the Data Principal does not approach the Fiduciary or exercise any rights for a prescribed time.",
+    "Publish business contact details of the Data Protection Officer or responsible contact person.",
+    "Establish an effective grievance redressal mechanism.",
+    "Clarify that Data Principal inactivity implies purpose is no longer served (as per clause 8)."
 ]
 
 # --- Sentence-wise GPT match function ---
-def match_sentence_to_checklist(sentence, checklist_items):
+def match_sentence_to_checklist6(sentence, checklist_items):
     prompt = f"""
-You are a DPDPA compliance analyst. Your job is to determine whether the following policy sentence fulfills any obligations listed under Section 6 of the DPDPA (Consent and Its Management).
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 6 (Consent and Its Management)of the Digital Personal Data Protection Act, 2023 (India).
 
----
-
-**Policy Sentence:**
-\"{sentence}\"
-
----
-
-**Checklist Items:**
-{chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
-
----
-
-**Important Instructions:**
-
-1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
-2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
-3. DO NOT mark a sentence as a match if it:
-   - Merely describes UI/UX behavior (e.g., “you can save preferences”) without explicitly referencing **consent** or legal control.
-   - Vaguely discusses data collection without mentioning **consent**, **affirmative action**, **withdrawal**, or **data principal control**.
-   - Contains generic statements like “we collect data to improve services” or “we store information”.
-
-4. Match ONLY IF:
-   - The sentence clearly mentions: consent, withdrawal, specified purpose, unambiguous agreement, consent manager, etc.
-   - The sentence reflects a **policy-level commitment**, not just a description of technical functionality.
-
-Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
-
-DO NOT match if:
-- The sentence **implies** or **suggests** compliance without clearly stating it.
-- It refers to **data/account controls** but does not mention **consent or legal intent**.
-- It discusses user actions (e.g., “signing up”, “saving preferences”, “contacting support”) without framing them as part of **consent management**.
-- The term “consent” or a legal synonym (e.g., “authorization”, “agreement”, “permission”) is **not present**, and the legal obligation is not unmistakably addressed.
-
----
-
-**Examples that should NOT be matched:**
-- “Users can delete data from their account” → ❌ Not equivalent to consent withdrawal.
-- “We collect information when you use our services” → ❌ Does not indicate clear affirmative action.
-- “You may adjust your settings” → ❌ Too vague to imply informed consent or legal control.
-
----
-
-✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
-
-> **Ask yourself for each match:**  
-> “Would a data protection auditor accept this as proof of compliance for this clause?”  
-> If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
-
----
-
-Please return your response strictly in the following JSON format:
-
-{{
-  "Matched Items": [
+    ---
+    
+    **Policy Sentence:**
+    \"{sentence}\"
+    
+    ---
+    
+    **Checklist Items:**
+    {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
+    
+    ---
+    
+    **Important Instructions:**
+    
+    1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
+    2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
+    3. DO NOT mark a sentence as a match if it:
+       - Merely describes UI/UX behavior (e.g., “you can save preferences”) without explicitly referencing **consent** or legal control.
+       - Vaguely discusses data collection without mentioning **consent**, **affirmative action**, **withdrawal**, or **data principal control**.
+       - Contains generic statements like “we collect data to improve services” or “we store information”.
+    
+    4. Match ONLY IF:
+       - The sentence clearly mentions: consent, withdrawal, specified purpose, unambiguous agreement, consent manager, etc.
+       - The sentence reflects a **policy-level commitment**, not just a description of technical functionality.
+    
+    Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+    
+    DO NOT match if:
+    - The sentence **implies** or **suggests** compliance without clearly stating it.
+    - It refers to **data/account controls** but does not mention **consent or legal intent**.
+    - It discusses user actions (e.g., “signing up”, “saving preferences”, “contacting support”) without framing them as part of **consent management**.
+    - The term “consent” or a legal synonym (e.g., “authorization”, “agreement”, “permission”) is **not present**, and the legal obligation is not unmistakably addressed.
+    
+    ---
+    
+    **Examples that should NOT be matched:**
+    - “Users can delete data from their account” → ❌ Not equivalent to consent withdrawal.
+    - “We collect information when you use our services” → ❌ Does not indicate clear affirmative action.
+    - “You may adjust your settings” → ❌ Too vague to imply informed consent or legal control.
+    
+    ---
+    
+    ✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
+    
+    > **Ask yourself for each match:**  
+    > “Would a data protection auditor accept this as proof of compliance for this clause?”  
+    > If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
+    
+    ---
+    
+    Please return your response strictly in the following JSON format:
+    
     {{
-      "Checklist Item": "...",
-      "Justification": "..."
+      "Matched Items": [
+        {{
+          "Checklist Item": "...",
+          "Justification": "..."
+        }}
+      ]
     }}
-  ]
-}}
-
-If no checklist item is clearly satisfied, return: "Matched Items": []
-"""
+    
+    If no checklist item is clearly satisfied, return: "Matched Items": []
+    """
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -219,7 +293,7 @@ def analyze_policy_section6(policy_text):
     for sentence in policy_sentences:
         if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
             continue
-        result = match_sentence_to_checklist(sentence, section_6_checklist)
+        result = match_sentence_to_checklist6(sentence, section_6_checklist)
         for match in result.get("Matched Items", []):
             match_results.append({
                 "Sentence": sentence.strip(),
@@ -278,179 +352,131 @@ def analyze_policy_section6(policy_text):
         "Suggested Rewrite": suggested_rewrite
     }
     return final_output
-
-
-# --- GPT Function ---
-def analyze_section(section_text, policy_text, full_chapter_text):
-    prompt = f"""You are a DPDPA compliance expert. Your task is to assess whether an organization's policy complies with the Digital Personal Data Protection Act, 2023 (India) — specifically Sections 4 to 8 under Chapter II. 
-
-To do this you must follow the "INSTRUCTIONS" given below. Focus only on current section for now.
-You must base your analysis only on the DPDPA section under review. Do not bring in requirements from other DPDPA sections or rules unless explicitly instructed.
-==========================================================
-ORGANIZATION POLICY:
-\"\"\"{policy_text}\"\"\"
-
-DPDPA SECTION UNDER REVIEW:
-\"\"\"{section_text}\"\"\"
-
-==========================================================
-INSTRUCTIONS:
-
-1. **Understand the Law in Simple Terms**
-   - Read the DPDPA Section carefully and explain it in your own words in simple, layman-friendly language.
-   - Capture *every important legal requirement* from the section.
-
-2. **Checklist Mapping**
-   - Refer to the official checklist of obligations provided for this section. Only use the checklist below. Do not create or infer new checklist items. If a point is not in the checklist, ignore it even if it appears legally relevant.
-   - For each checklist item do following- 
-      - Go through the policy *sentence by sentence* and see if that sentence addresses the checklist item.
-      - Each checklist item must be matched to one or more specific sentences individually. Do not combine multiple unrelated statements to justify a match.
-      - **Only count an item as covered if it is explicitly and clearly mentioned in the policy with correct context. Vague, generic, or partial references must be marked as unmatched. Do not assume implied meaning — legal clarity is required.**
-      - Before confirming a match, verify that the sentence appears verbatim in the policy text above.
-      - Do not make assumptions or stretch interpretations.
-      - Do not assume that generic statements (e.g., "we improve services") imply security, consent, breach notifications, etc.
-      - Only match if the sentence **explicitly and clearly refers** to the legal requirement in the checklist.
-      - If a sentence does **not** clearly mention keywords like “security,” “data breach,” “firewall,” “encryption,” or similar — it should **not** be matched for a checklist item about breach safeguards.
-      - Every matched checklist item must cite the exact sentence(s) from the policy verbatim.
-      - This needs to be shown in the output - "Checklist Items" - In this -  mention the checklist item, whether it matches or not, the sentence/s from policy to which this checklist item matches and what is the justification for it getting matched.
-      - If no sentence exactly matches, mark the item as Matched: false.
-      - You will be penalized if you claim a sentence exists in the policy when it does not. If unsure, leave Matched Sentences blank and set Matched: false.
-
-3. **Classification**
-   - Match Level:
-     - "Fully Compliant": All checklist items are covered clearly.
-     - "Partially Compliant": At least one item is missing or only vaguely mentioned.
-     - "Non-Compliant": No checklist item is covered.
-   - Severity (only for Partially Compliant):
-     - Minor = 1 missing item
-     - Medium = 2–3 missing items
-     - Major = 4 or more missing / any critical clause missing
-   - Compliance Points:
-     - Fully Compliant = 1.0
-     - Partially Compliant:
-        - Minor = 0.75
-        - Medium = 0.5
-        - Major = 0.25
-     - Non-Compliant = 0.0
-
-4. **Suggested Rewrite**
-   - This is an extremely important step so do this properly. For the section do the following points - 
-      - Review the **checklist** for this section again and identify which items are **missing** from the policy.
-      - For each missing item, write **1 sentence** that can be added to the policy to ensure compliance.
-      - The rewrite should be a clear, implementable policy statement for each missing item.
-      - Do not recommend additions beyond the missing checklist items. Rewrites should strictly address only those gaps.
-==========================================================
-OUTPUT FORMAT (strict JSON):
-{{
-  "DPDPA Section": "...",
-  "DPDPA Section Meaning": "...",
-  "Checklist Items": [
-    {{
-      "Item": "...",
-      "Matched": true/false,
-      "Matched Sentences": [ "Each sentence listed here **must appear exactly** in the policy text above. Do not invent or paraphrase any line. If unsure or if no exact sentence is found, leave this blank."],
-      "Justification": "..."
-    }},
-    ...
-  ],
-  "Match Level": "...",
-  "Severity": "...",
-  "Compliance Points": "...",
-  "Suggested Rewrite": "..."
-}}
-
-==========================================================
-CHECKLIST TO USE:
-
-
-**Section 4: Grounds for Processing Personal Data**
-
-1. ☐ Personal data is processed **only** for lawful purposes.
-2. ☐ Lawful purpose must be:
-
-   * ☐ Backed by **explicit consent** from the Data Principal **OR**
-   * ☐ Falls under **legitimate uses** as per Section 7.
-3. ☐ Lawful purpose must **not be expressly forbidden** by any law.
-
-**Section 5: Notice Before Consent**
-
-1. ☐ Notice is provided **before or at the time** of requesting consent.
-2. Notice must clearly mention:
-
-   * ☐ What **personal data** is being collected.
-   * ☐ The **purpose** of processing.
-   * ☐ How to **exercise rights** under Section 6(4) and Section 13.
-   * ☐ How to **lodge complaints** with the Board.
-3. ☐ For existing data collected **before DPDPA**, retrospective notice must also be issued as soon as practicable with all points above.
-
-**Section 6: Consent and Its Management**
-
-1. ☐ Consent is **free, specific, informed, unconditional, and unambiguous**.
-2. ☐ Consent is **given via clear affirmative action**.
-3. ☐ Consent is **limited to specified purpose only**.
-4. ☐ Consent can be **withdrawn** at any time.
-5. ☐ Data Fiduciary shall **cease processing** upon withdrawal (unless legally required).
-6. ☐ Consent Manager is available (if applicable):
-
-   * ☐ Consent Manager is **registered** and functions independently.
-   * ☐ Consent Manager allows:
-
-     * ☐ Giving, managing, and withdrawing consent easily.
-     * ☐ Logs consent history for audit.
-7. ☐ Data Fiduciary must honor withdrawal requests promptly.
-8. ☐ Retention of personal data stops unless required by law.
-
-**Section 7: Legitimate Uses (No Consent Needed)**
-
-Processing without consent is allowed **only** if it meets the following (tick applicable):
-
-* ☐ For specified government subsidies/services/licenses.
-* ☐ For State functions (e.g., national security, law enforcement).
-* ☐ To comply with legal obligations.
-* ☐ Under court orders or judgments.
-* ☐ For medical emergencies or disasters.
-* ☐ For employment-related purposes with safeguards.
-* ☐ For corporate security or internal fraud prevention.
-  Each use must:
-
-  * ☐ Be **necessary** and **proportionate**.
-  * ☐ Adhere to standards/rules to be prescribed.
-
-**Section 8: General Obligations of Data Fiduciary**
-
-1. ☐ Fiduciary is fully accountable for processing by itself or its Data Processor.
-2. ☐ Processing must be under a valid **contract** with the Data Processor.
-3. ☐ If data is to:
-
-   * ☐ Influence decisions or
-   * ☐ Be shared with other Fiduciaries,
-     → Then data must be:
-
-     * ☐ Complete
-     * ☐ Accurate
-     * ☐ Consistent
-4. ☐ Implement **technical and organisational measures** for compliance.
-5. ☐ Take **reasonable security safeguards** to prevent breaches.
-6. ☐ Report data breaches to:
-
-   * ☐ Data Protection Board
-   * ☐ Affected Data Principals
-7. ☐ Erase data when:
-
-   * ☐ Consent is withdrawn, OR
-   * ☐ Purpose is no longer being served
-   * ☐ Also instruct Data Processor to erase it.
-8. ☐ Define time periods for retention based on inactivity of Data Principal.
-9. ☐ Publish business contact info of DPO or responsible officer.
-10. ☐ Establish a grievance redressal mechanism."""
     
+def match_sentence_to_checklist4(sentence, checklist_items):
+    prompt = f"""
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 4 (Grounds for Processing Personal Data)of the Digital Personal Data Protection Act, 2023 (India).
+
+    ---
+    
+    **Policy Sentence:**
+    \"{sentence}\"
+    
+    ---
+    
+    **Checklist Items:**
+    {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
+    
+    ---
+    
+    **Important Instructions:**
+    
+    1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
+    2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
+    3. DO NOT mark a sentence as a match if it:
+       
+    Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+    
+    DO NOT match if:
+    - The sentence **implies** or **suggests** compliance without clearly stating it.
+    
+    ✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
+    
+    > **Ask yourself for each match:**  
+    > “Would a data protection auditor accept this as proof of compliance for this clause?”  
+    > If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
+    
+    ---
+    
+    Please return your response strictly in the following JSON format:
+    
+    {{
+      "Matched Items": [
+        {{
+          "Checklist Item": "...",
+          "Justification": "..."
+        }}
+      ]
+    }}
+    
+    If no checklist item is clearly satisfied, return: "Matched Items": []
+    """
+
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0
     )
-    return response.choices[0].message.content
+    return json.loads(response.choices[0].message.content)
 
+
+# --- Full analyzer using sentence loop for Section 6 only ---
+def analyze_policy_section4(policy_text):
+    policy_sentences = sent_tokenize(policy_text)
+    match_results = []
+
+    for sentence in policy_sentences:
+        if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
+            continue
+        result = match_sentence_to_checklist6(sentence, section_6_checklist)
+        for match in result.get("Matched Items", []):
+            match_results.append({
+                "Sentence": sentence.strip(),
+                "Checklist Item": match["Checklist Item"].strip(),
+                "Justification": match["Justification"].strip()
+            })
+
+    # Deduplicate matched checklist items
+    matched_items = {}
+    for r in match_results:
+        if r["Checklist Item"] not in matched_items:
+            matched_items[r["Checklist Item"]] = r
+
+    matched_count = len(matched_items)
+    total_items = len(section_6_checklist)
+
+    # Classification logic
+    if matched_count == total_items:
+        match_level = "Fully Compliant"
+        points = 1.0
+        severity = "N/A"
+    elif matched_count == 0:
+        match_level = "Non-Compliant"
+        points = 0.0
+        severity = "Major"
+    elif matched_count == 1:
+        match_level = "Partially Compliant"
+        points = 0.75
+        severity = "Minor"
+    elif matched_count <= 3:
+        match_level = "Partially Compliant"
+        points = 0.5
+        severity = "Medium"
+    else:
+        match_level = "Partially Compliant"
+        points = 0.25
+        severity = "Major"
+
+    # Suggested Rewrites
+    missing_items = [item for item in section_6_checklist if item not in matched_items]
+    if missing_items:
+        suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
+            "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
+    else:
+        suggested_rewrite = "All checklist items are covered."
+
+    # Final Output
+    final_output = {
+        "DPDPA Section": "Section 4 — Grounds for Processing Personal Data",
+        "DPDPA Section Meaning": "",
+        "Checklist Items Matched": list(set(matched_items.keys())),
+        "Matched Sentences": list(matched_items.values()),
+        "Match Level": match_level,
+        "Severity": severity,
+        "Compliance Points": points,
+        "Suggested Rewrite": suggested_rewrite
+    }
+    return final_output
 
 def set_custom_css():
     st.markdown("""
@@ -696,13 +722,20 @@ elif menu == "Policy Compliance Checker":
                 for section in dpdpa_sections:
                     st.markdown(f"##### Analyzing: {section}")
                     try:
-                        if section == "Section 6 — Consent":
+                        if section == "Section 4 — Grounds for Processing Personal Data":
+                            validated_section = analyze_policy_section4(policy_text)
+                            results.append(validated_section)
+                        elif section == "Section 5 — Notice":
+                            validated_section = analyze_policy_section5(policy_text)
+                            results.append(validated_section)
+                        elif section == "Section 6 — Consent":
                             validated_section = analyze_policy_section6(policy_text)
                             results.append(validated_section)
-                        else:
-                            section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
-                            parsed_section = json.loads(section_response)
-                            validated_section = validate_matches(parsed_section, policy_text)
+                        elif section == "Section 7 — Certain Legitimate Uses":
+                            validated_section = analyze_policy_section7(policy_text)
+                            results.append(validated_section)
+                        elif section == "Section 8 — General Obligations of Data Fiduciary":
+                            validated_section = analyze_policy_section8(policy_text)
                             results.append(validated_section)
 
                         st.success(f"✅ Completed: {section}")
