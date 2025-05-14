@@ -3,12 +3,11 @@ import streamlit as st
 import openai
 import json
 import pandas as pd
-import nltk
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt")
-from nltk.tokenize import sent_tokenize
+import re
+def sent_tokenize(text):
+    """A basic fallback sentence tokenizer using regex."""
+    text = text.replace("\n", " ")
+    return re.split(r'(?<=[.!?]) +', text)
 
 
 # --- OpenAI Setup ---
