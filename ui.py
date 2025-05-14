@@ -218,7 +218,7 @@ def analyze_policy_section6(policy_text):
     missing_items = [item for item in section_6_checklist if item not in matched_items]
     suggested_rewrite = "\n".join([f"- Add a clear statement to address: {item}" for item in missing_items]) if missing_items else "All checklist items are covered."
 
-    final_output_
+    final_output
 
 
 # --- GPT Function ---
