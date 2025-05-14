@@ -166,7 +166,7 @@ OUTPUT FORMAT (strict JSON):
     {{
       "Item": "...",
       "Matched": true/false,
-      "Matched Sentences": ["...", "..."],
+      "Matched Sentences": [ "Each sentence listed here **must appear exactly** in the policy text above. Do not invent or paraphrase any line. If unsure or if no exact sentence is found, leave this blank."],
       "Justification": "..."
     }},
     ...
