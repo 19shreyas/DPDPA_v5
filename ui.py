@@ -136,26 +136,36 @@ section_6_checklist = [
 # --- Sentence-wise GPT match function ---
 def match_sentence_to_checklist(sentence, checklist_items):
     prompt = f"""
-You are a DPDPA compliance analyst. Match the following policy sentence against the Section 6 checklist items.
+You are a DPDPA compliance analyst. Your job is to determine whether the following policy sentence fulfills any obligations listed under Section 6 of the DPDPA (Consent and Its Management).
 
-Policy Sentence:
+---
+
+**Policy Sentence:**
 \"{sentence}\"
 
-Checklist Items:
+---
+
+**Checklist Items:**
 {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
 
-Instructions:
-- Instructions:
-- Carefully evaluate whether the sentence **explicitly and clearly** satisfies one or more checklist items.
-- Only mark a checklist item as matched if the sentence provides **clear policy intent**, **legal clarity**, and **unambiguous coverage** of the obligation.
-- Avoid interpreting meaning or assuming user behavior. Do **not** infer intent based on tone, implication, or common practice.
-- Vague, descriptive, or generic text should be **ignored** even if it sounds related.
-- Examples of invalid matches:
-    - Descriptive sentences like “We collect information to improve services” → ❌ Not a match.
-    - UI behavior like “click here to manage preferences” → ❌ Not a match unless tied to Consent Manager.
-    - Sentences implying consent is given (e.g., “information you provide”) → ❌ Not sufficient. Needs explicit mention of **consent** and how it is obtained, managed, or withdrawn.
-- A match should be treated as **legally binding policy coverage**, not inferred behavior.
-- Return response in JSON format:
+---
+
+**Important Instructions:**
+
+1. Match ONLY if the sentence **explicitly** refers to the checklist item with clear legal meaning. 
+2. **Do NOT** assume, imply, interpret user behavior, or stretch the meaning. 
+3. **Do NOT** match if:
+   - The sentence describes UI/UX behavior (e.g., “you can save preferences”) without linking to **consent** or legal control.
+   - It vaguely mentions data collection without mentioning **consent**, **affirmative action**, **withdrawal**, or **control**.
+   - It refers to general statements like “we collect data to improve services” or “we store information”.
+
+4. Match ONLY IF:
+   - The sentence includes clear reference to: consent, withdrawal, specified purpose, unambiguous agreement, consent manager, etc.
+   - The sentence represents a policy **commitment** — not just a functional description.
+
+---
+
+Please return your response strictly in the following JSON format:
 
 {{
   "Matched Items": [
@@ -166,15 +176,16 @@ Instructions:
   ]
 }}
 
-If no match is found, return: "Matched Items": []
+If no checklist item is clearly satisfied, return: "Matched Items": []
 """
+
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0
     )
-    #return json.loads(response['choices'][0]['message']['content'])
     return json.loads(response.choices[0].message.content)
+
 
 
 # --- Full analyzer using sentence loop for Section 6 only ---
