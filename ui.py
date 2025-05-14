@@ -299,11 +299,14 @@ If no match, return:
     all_sentence_matches = []
 
     for sentence in sentences:
+        st.markdown("sentence evaluated - ")
+        st.markdown(sentence)
         if len(sentence.split()) < 5:
             continue
         prompt = build_sentence_prompt(sentence, section_6_checklist)
         result = call_gpt(prompt)
         all_sentence_matches.append(result)
+
 
     checklist_to_sentences = defaultdict(list)
     for entry in all_sentence_matches:
