@@ -131,8 +131,8 @@ section_8_checklist = [
     
 def match_sentence_to_checklist4(sentence, checklist_items):
     prompt = f"""
-    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 4 (Grounds for Processing Personal Data) of the Digital Personal Data Protection Act, 2023 (India).
-
+    You are a DPDPA compliance auditor. Your task is to evaluate whether the following policy sentence clearly satisfies **any** of the obligations listed under **Section 4: Grounds for Processing Personal Data** of the **Digital Personal Data Protection Act, 2023 (India).**
+    
     ---
     
     **Policy Sentence:**
@@ -140,31 +140,38 @@ def match_sentence_to_checklist4(sentence, checklist_items):
     
     ---
     
-    **Checklist Items:**
+    **Checklist Items from Section 4:**
     {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
     
     ---
     
-    **Important Instructions:**
+    **Evaluation Instructions:**
     
-    1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
-    2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
-    3. DO NOT mark a sentence as a match if it:
-       
-    Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+    You must ONLY mark a checklist item as matched if:
     
-    DO NOT match if:
-    - The sentence **implies** or **suggests** compliance without clearly stating it.
-    
-    ✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
-    
-    > **Ask yourself for each match:**  
-    > “Would a data protection auditor accept this as proof of compliance for this clause?”  
-    > If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
+    - The sentence **explicitly states** a lawful ground for processing personal data (e.g., consent, legal obligation, legitimate use).
+    - It uses **unambiguous legal terms** or policy language like "lawful purpose", "explicit consent", "permitted under law", or "in accordance with Section 4".
+    - It clearly describes a basis that is **not prohibited** by law and **is supported by user consent or valid legal grounds**.
     
     ---
     
-    Please return your response strictly in the following JSON format:
+    **You MUST NOT match** if:
+    
+    - The sentence merely says "we collect information" or "we use your data" without stating **why** (the legal ground).
+    - The sentence talks about **benefits to the user** (e.g., personalization, service improvement) without identifying a **lawful purpose**.
+    - The sentence uses vague or generic language like "to serve you better", "to help improve services", or "we process data" without citing any valid basis.
+    - You have to **infer** or **guess** a legal justification — this is **non-compliant**.
+    
+    ✅ Match ONLY when the legal obligation is directly stated, precise, and clear.  
+    ❌ Do NOT rely on assumptions or indirect phrasing.
+    
+    > **Self-check before matching:**  
+    > “Would a data protection auditor accept this sentence as evidence of compliance with Section 4?”  
+    > If the answer is not a confident YES, do not match.
+    
+    ---
+    
+    **Response Format (strict JSON):**
     
     {{
       "Matched Items": [
@@ -175,8 +182,10 @@ def match_sentence_to_checklist4(sentence, checklist_items):
       ]
     }}
     
-    If no checklist item is clearly satisfied, return: "Matched Items": []
+    If none of the checklist items are satisfied, return:
+    "Matched Items": []
     """
+
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
