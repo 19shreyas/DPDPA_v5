@@ -165,7 +165,9 @@ If no match is found, return: "Matched Items": []
         messages=[{"role": "user", "content": prompt}],
         temperature=0
     )
-    return json.loads(response['choices'][0]['message']['content'])
+    #return json.loads(response['choices'][0]['message']['content'])
+    return json.loads(response.choices[0].message.content)
+
 
 # --- Full analyzer using sentence loop for Section 6 only ---
 def analyze_policy_section6(policy_text):
