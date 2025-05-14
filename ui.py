@@ -100,10 +100,10 @@ Sub-section (11) of Section 8. - Clarification: lack of contact by Data Principa
 
 # --- GPT Function ---
 def analyze_section(section_text, policy_text, full_chapter_text):
-    prompt = f"""You are a DPDPA compliance expert. Your task is to assess whether an organization's policy complies with the Digital Personal Data Protection Act, 2023 (India) — specifically Sections 4 to 10 under Chapter II. 
+    prompt = f"""You are a DPDPA compliance expert. Your task is to assess whether an organization's policy complies with the Digital Personal Data Protection Act, 2023 (India) — specifically Sections 4 to 8 under Chapter II. 
 
-You must **read each sentence in the policy** and compare it with the legal **checklist of obligations derived from the assigned DPDPA Section**.
-
+To do this you must follow the "INSTRUCTIONS" given below. Focus only on current section for now.
+You must base your analysis only on the DPDPA section under review. Do not bring in requirements from other DPDPA sections or rules unless explicitly instructed.
 ==========================================================
 ORGANIZATION POLICY:
 \"\"\"{policy_text}\"\"\"
@@ -119,9 +119,10 @@ INSTRUCTIONS:
    - Capture *every important legal requirement* from the section.
 
 2. **Checklist Mapping**
-   - Refer to the official checklist of obligations provided for this section.
+   - Refer to the official checklist of obligations provided for this section. Only use the checklist below. Do not create or infer new checklist items. If a point is not in the checklist, ignore it even if it appears legally relevant.
    - For each checklist item do following- 
       - Go through the policy *sentence by sentence* and see if that sentence addresses the checklist item.
+      - Each checklist item must be matched to one or more specific sentences individually. Do not combine multiple unrelated statements to justify a match.
       - **Only count an item as covered if it is explicitly and clearly mentioned in the policy with correct context. Vague, generic, or partial references must be marked as unmatched. Do not assume implied meaning — legal clarity is required.**
       - Do not make assumptions or stretch interpretations.
       - Do not assume that generic statements (e.g., "we improve services") imply security, consent, breach notifications, etc.
@@ -152,6 +153,7 @@ INSTRUCTIONS:
       - Review the **checklist** for this section again and identify which items are **missing** from the policy.
       - For each missing item, write **1 sentence** that can be added to the policy to ensure compliance.
       - The rewrite should be a clear, implementable policy statement for each missing item.
+      - Do not recommend additions beyond the missing checklist items. Rewrites should strictly address only those gaps.
 ==========================================================
 OUTPUT FORMAT (strict JSON):
 {{
