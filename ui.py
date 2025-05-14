@@ -3,6 +3,10 @@ import streamlit as st
 import openai
 import json
 import pandas as pd
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import sent_tokenize
+
 
 # --- OpenAI Setup ---
 api_key = st.secrets["OPENAI_API_KEY"]
@@ -112,11 +116,6 @@ def validate_matches(gpt_output, policy_text):
             )
     return gpt_output
 
-import nltk
-nltk.download('punkt')
-from nltk.tokenize import sent_tokenize
-import openai
-import json
 
 # --- Section 6 Checklist ---
 section_6_checklist = [
