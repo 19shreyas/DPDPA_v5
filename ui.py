@@ -124,6 +124,7 @@ INSTRUCTIONS:
       - Go through the policy *sentence by sentence* and see if that sentence addresses the checklist item.
       - Each checklist item must be matched to one or more specific sentences individually. Do not combine multiple unrelated statements to justify a match.
       - **Only count an item as covered if it is explicitly and clearly mentioned in the policy with correct context. Vague, generic, or partial references must be marked as unmatched. Do not assume implied meaning — legal clarity is required.**
+      - Before confirming a match, verify that the sentence appears verbatim in the policy text above.
       - Do not make assumptions or stretch interpretations.
       - Do not assume that generic statements (e.g., "we improve services") imply security, consent, breach notifications, etc.
       - Only match if the sentence **explicitly and clearly refers** to the legal requirement in the checklist.
@@ -262,7 +263,7 @@ Processing without consent is allowed **only** if it meets the following (tick a
 10. ☐ Establish a grievance redressal mechanism."""
     
     response = client.chat.completions.create(
-        model="gpt-4-turbo",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0
     )
