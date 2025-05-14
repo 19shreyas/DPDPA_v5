@@ -128,8 +128,10 @@ INSTRUCTIONS:
       - Do not assume that generic statements (e.g., "we improve services") imply security, consent, breach notifications, etc.
       - Only match if the sentence **explicitly and clearly refers** to the legal requirement in the checklist.
       - If a sentence does **not** clearly mention keywords like “security,” “data breach,” “firewall,” “encryption,” or similar — it should **not** be matched for a checklist item about breach safeguards.
-
+      - Every matched checklist item must cite the exact sentence(s) from the policy verbatim.
       - This needs to be shown in the output - "Checklist Items" - In this -  mention the checklist item, whether it matches or not, the sentence/s from policy to which this checklist item matches and what is the justification for it getting matched.
+      - If no sentence exactly matches, mark the item as Matched: false.
+      - You will be penalized if you claim a sentence exists in the policy when it does not. If unsure, leave Matched Sentences blank and set Matched: false.
 
 3. **Classification**
    - Match Level:
