@@ -218,19 +218,9 @@ def analyze_policy_section6(policy_text):
 
     # Enhanced sentence tokenizer
     def sent_tokenize(text):
-        text = text.replace('\r\n', '\n').replace('\r', '\n')
-        text = re.sub(r'\n+', '\n', text)
-        paragraphs = text.split('\n')
-        sentences = []
-        for para in paragraphs:
-            para = para.strip()
-            if not para:
-                continue
-            if re.search(r'[a-zA-Z0-9]{3,}', para):
-                sentences += re.split(r'(?<=[.!?]) +', para)
-            else:
-                sentences.append(para)
-        return [s.strip() for s in sentences if s.strip()]
+    """A basic fallback sentence tokenizer using regex."""
+        text = text.replace("\n", " ")
+        return re.split(r'(?<=[.!?]) +', text)
 
     # Checklist with IDs
     section_6_checklist = [
