@@ -218,7 +218,7 @@ def analyze_policy_section6(policy_text):
 
     # Enhanced sentence tokenizer
     def sent_tokenize(text):
-    """A basic fallback sentence tokenizer using regex."""
+        """A basic fallback sentence tokenizer using regex."""
         text = text.replace("\n", " ")
         return re.split(r'(?<=[.!?]) +', text)
 
