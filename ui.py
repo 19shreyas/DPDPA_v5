@@ -4,7 +4,10 @@ import openai
 import json
 import pandas as pd
 import nltk
-nltk.download('punkt')
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
 from nltk.tokenize import sent_tokenize
 
 
