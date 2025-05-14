@@ -112,6 +112,104 @@ def validate_matches(gpt_output, policy_text):
             )
     return gpt_output
 
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import sent_tokenize
+import openai
+import json
+
+# --- Section 6 Checklist ---
+section_6_checklist = [
+    "Consent is free, specific, informed, unconditional, and unambiguous.",
+    "Consent is given via clear affirmative action.",
+    "Consent is limited to specified purpose only.",
+    "Consent can be withdrawn at any time.",
+    "Data Fiduciary shall cease processing upon withdrawal (unless legally required).",
+    "Consent Manager is registered and functions independently.",
+    "Consent Manager allows giving, managing, and withdrawing consent easily.",
+    "Consent Manager logs consent history for audit.",
+    "Data Fiduciary must honor withdrawal requests promptly.",
+    "Retention of personal data stops unless required by law."
+]
+
+# --- Sentence-wise GPT match function ---
+def match_sentence_to_checklist(sentence, checklist_items):
+    prompt = f"""
+You are a DPDPA compliance analyst. Match the following policy sentence against the Section 6 checklist items.
+
+Policy Sentence:
+\"{sentence}\"
+
+Checklist Items:
+{chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
+
+Instructions:
+- Identify which checklist item(s) this sentence clearly satisfies.
+- Only mark as matched if the sentence **explicitly** satisfies the item. Do NOT infer or assume.
+- Return response in JSON format:
+
+{{
+  "Matched Items": [
+    {{
+      "Checklist Item": "...",
+      "Justification": "..."
+    }}
+  ]
+}}
+
+If no match is found, return: "Matched Items": []
+"""
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    return json.loads(response['choices'][0]['message']['content'])
+
+# --- Full analyzer using sentence loop for Section 6 only ---
+def analyze_policy_section6(policy_text):
+    policy_sentences = sent_tokenize(policy_text)
+    match_results = []
+
+    for sentence in policy_sentences:
+        result = match_sentence_to_checklist(sentence, section_6_checklist)
+        for match in result["Matched Items"]:
+            match_results.append({
+                "Sentence": sentence,
+                "Checklist Item": match["Checklist Item"],
+                "Justification": match["Justification"]
+            })
+
+    matched_items = set([r["Checklist Item"] for r in match_results])
+    total_items = len(section_6_checklist)
+    matched_count = len(matched_items)
+
+    if matched_count == total_items:
+        match_level = "Fully Compliant"
+        points = 1.0
+    elif matched_count == 0:
+        match_level = "Non-Compliant"
+        points = 0.0
+    elif matched_count == 1:
+        match_level = "Partially Compliant"
+        points = 0.75
+    elif matched_count <= 3:
+        match_level = "Partially Compliant"
+        points = 0.5
+    else:
+        match_level = "Partially Compliant"
+        points = 0.25
+
+    final_output = {
+        "DPDPA Section": "Section 6 — Consent",
+        "Checklist Items Matched": list(matched_items),
+        "Match Level": match_level,
+        "Compliance Score": points,
+        "Matched Sentences": match_results
+    }
+    return final_output
+
+
 # --- GPT Function ---
 def analyze_section(section_text, policy_text, full_chapter_text):
     prompt = f"""You are a DPDPA compliance expert. Your task is to assess whether an organization's policy complies with the Digital Personal Data Protection Act, 2023 (India) — specifically Sections 4 to 8 under Chapter II. 
@@ -528,11 +626,15 @@ elif menu == "Policy Compliance Checker":
                 for section in dpdpa_sections:
                     st.markdown(f"##### Analyzing: {section}")
                     try:
-                        section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
-                        parsed_section = json.loads(section_response)
-                        validated_section = validate_matches(parsed_section, policy_text)
-                    
-                        results.append(validated_section)
+                        if section == "Section 6 — Consent":
+                            validated_section = analyze_policy_section6(policy_text)
+                            results.append(validated_section)
+                        else:
+                            section_response = analyze_section(section, policy_text, dpdpa_chapter_text)
+                            parsed_section = json.loads(section_response)
+                            validated_section = validate_matches(parsed_section, policy_text)
+                            results.append(validated_section)
+
                         st.success(f"✅ Completed: {section}")
 
                     except Exception as e:
