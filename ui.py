@@ -646,14 +646,16 @@ elif menu == "Policy Compliance Checker":
             st.markdown("---")
             if results:
                 # Flatten results for table display (avoid [object Object])
-                flat_data = [
-                    {
-                        "DPDPA Section": row["DPDPA Section"],
-                        "Meaning": row["DPDPA Section Meaning"],
-                        "Match Level": row["Match Level"],
+                flat_data = []
+                for row in results:
+                    flat_data.append({
+                        "DPDPA Section": row.get("DPDPA Section", ""),
+                        "Meaning": row.get("DPDPA Section Meaning", "Not applicable"),
+                        "Match Level": row.get("Match Level", ""),
                         "Severity": row.get("Severity", ""),
-                        "Score": row.get("Compliance Points", "")
-                    }
+                        "Score": row.get("Compliance Points", row.get("Compliance Score", ""))
+                    })
+
                     for row in results
                 ]
                 df = pd.DataFrame(flat_data)
