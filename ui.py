@@ -183,34 +183,42 @@ def analyze_policy_section6(policy_text):
                 "Justification": match["Justification"]
             })
 
-    matched_items = set([r["Checklist Item"] for r in match_results])
-    total_items = len(section_6_checklist)
-    matched_count = len(matched_items)
+    # Deduplicate checklist items by keeping the first matched instance
+    matched_items = {}
+    for r in match_results:
+        if r["Checklist Item"] not in matched_items:
+            matched_items[r["Checklist Item"]] = r
 
+    matched_count = len(matched_items)
+    total_items = len(section_6_checklist)
+
+    # Classification logic
     if matched_count == total_items:
         match_level = "Fully Compliant"
         points = 1.0
+        severity = "N/A"
     elif matched_count == 0:
         match_level = "Non-Compliant"
         points = 0.0
+        severity = "Major"
     elif matched_count == 1:
         match_level = "Partially Compliant"
         points = 0.75
+        severity = "Minor"
     elif matched_count <= 3:
         match_level = "Partially Compliant"
         points = 0.5
+        severity = "Medium"
     else:
         match_level = "Partially Compliant"
         points = 0.25
+        severity = "Major"
 
-    final_output = {
-        "DPDPA Section": "Section 6 — Consent",
-        "Checklist Items Matched": list(matched_items),
-        "Match Level": match_level,
-        "Compliance Score": points,
-        "Matched Sentences": match_results
-    }
-    return final_output
+    # Suggested Rewrite
+    missing_items = [item for item in section_6_checklist if item not in matched_items]
+    suggested_rewrite = "\n".join([f"- Add a clear statement to address: {item}" for item in missing_items]) if missing_items else "All checklist items are covered."
+
+    final_output_
 
 
 # --- GPT Function ---
