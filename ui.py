@@ -152,16 +152,39 @@ You are a DPDPA compliance analyst. Your job is to determine whether the followi
 
 **Important Instructions:**
 
-1. Match ONLY if the sentence **explicitly** refers to the checklist item with clear legal meaning. 
-2. **Do NOT** assume, imply, interpret user behavior, or stretch the meaning. 
-3. **Do NOT** match if:
-   - The sentence describes UI/UX behavior (e.g., “you can save preferences”) without linking to **consent** or legal control.
-   - It vaguely mentions data collection without mentioning **consent**, **affirmative action**, **withdrawal**, or **control**.
-   - It refers to general statements like “we collect data to improve services” or “we store information”.
+1. Match ONLY if the sentence **explicitly** refers to the checklist item using clear legal language.
+2. **DO NOT** infer, imply, interpret user behavior, or stretch meaning.
+3. DO NOT mark a sentence as a match if it:
+   - Merely describes UI/UX behavior (e.g., “you can save preferences”) without explicitly referencing **consent** or legal control.
+   - Vaguely discusses data collection without mentioning **consent**, **affirmative action**, **withdrawal**, or **data principal control**.
+   - Contains generic statements like “we collect data to improve services” or “we store information”.
 
 4. Match ONLY IF:
-   - The sentence includes clear reference to: consent, withdrawal, specified purpose, unambiguous agreement, consent manager, etc.
-   - The sentence represents a policy **commitment** — not just a functional description.
+   - The sentence clearly mentions: consent, withdrawal, specified purpose, unambiguous agreement, consent manager, etc.
+   - The sentence reflects a **policy-level commitment**, not just a description of technical functionality.
+
+Only count a checklist item as matched if the sentence **explicitly and unambiguously** addresses the legal obligation — either through exact terminology or unmistakable legal phrasing.
+
+DO NOT match if:
+- The sentence **implies** or **suggests** compliance without clearly stating it.
+- It refers to **data/account controls** but does not mention **consent or legal intent**.
+- It discusses user actions (e.g., “signing up”, “saving preferences”, “contacting support”) without framing them as part of **consent management**.
+- The term “consent” or a legal synonym (e.g., “authorization”, “agreement”, “permission”) is **not present**, and the legal obligation is not unmistakably addressed.
+
+---
+
+**Examples that should NOT be matched:**
+- “Users can delete data from their account” → ❌ Not equivalent to consent withdrawal.
+- “We collect information when you use our services” → ❌ Does not indicate clear affirmative action.
+- “You may adjust your settings” → ❌ Too vague to imply informed consent or legal control.
+
+---
+
+✅ Match only when the legal requirement is **explicit**, **contextually precise**, and **linguistically unambiguous**.
+
+> **Ask yourself for each match:**  
+> “Would a data protection auditor accept this as proof of compliance for this clause?”  
+> If the answer is “maybe” or “only if interpreted generously,” then the item should **NOT** be marked as matched.
 
 ---
 
