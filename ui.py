@@ -145,8 +145,16 @@ Checklist Items:
 {chr(10).join([f"{i+1}. {item}" for i, item in enumerate(checklist_items)])}
 
 Instructions:
-- Identify which checklist item(s) this sentence clearly satisfies.
-- Only mark as matched if the sentence **explicitly** satisfies the item. Do NOT infer or assume.
+- Instructions:
+- Carefully evaluate whether the sentence **explicitly and clearly** satisfies one or more checklist items.
+- Only mark a checklist item as matched if the sentence provides **clear policy intent**, **legal clarity**, and **unambiguous coverage** of the obligation.
+- Avoid interpreting meaning or assuming user behavior. Do **not** infer intent based on tone, implication, or common practice.
+- Vague, descriptive, or generic text should be **ignored** even if it sounds related.
+- Examples of invalid matches:
+    - Descriptive sentences like “We collect information to improve services” → ❌ Not a match.
+    - UI behavior like “click here to manage preferences” → ❌ Not a match unless tied to Consent Manager.
+    - Sentences implying consent is given (e.g., “information you provide”) → ❌ Not sufficient. Needs explicit mention of **consent** and how it is obtained, managed, or withdrawn.
+- A match should be treated as **legally binding policy coverage**, not inferred behavior.
 - Return response in JSON format:
 
 {{
