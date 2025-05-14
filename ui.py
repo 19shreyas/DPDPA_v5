@@ -656,8 +656,6 @@ elif menu == "Policy Compliance Checker":
                         "Score": row.get("Compliance Points", row.get("Compliance Score", ""))
                     })
 
-                    for row in results
-                ]
                 df = pd.DataFrame(flat_data)
             
                 # Display clean table
