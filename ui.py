@@ -23,86 +23,6 @@ dpdpa_sections = [
     "Section 8 — General Obligations of Data Fiduciary"
 ]
 
-# --- DPDPA Legal Text ---
-dpdpa_chapter_text = """CHAPTER II
-OBLIGATIONS OF DATA FIDUCIARY
-
-Section 4. Grounds for processing personal data.
-Sub-section (1) of Section 4. -  A person may process the personal data of a Data Principal only in accordance with the provisions of this Act and for a lawful purpose—
-  (a) for which the Data Principal has given her consent; or
-  (b) for certain legitimate uses.
-
-Sub-section (2) of Section 4. -  For the purposes of this section, the expression “lawful purpose” means any purpose which is not expressly forbidden by law.
-
-Section 5. Notice.
-Sub-section (1) of Section 5. - Every request made to a Data Principal under section 6 for consent shall be accompanied or preceded by a notice given by the Data Fiduciary to the Data Principal, informing her—
-  (i) the personal data and the purpose for which the same is proposed to be processed;
-  (ii) the manner in which she may exercise her rights under sub-section (4) of section 6 and section 13; and
-  (iii) the manner in which the Data Principal may make a complaint to the Board, in such manner and as may be prescribed.
-
-Sub-section (2) of Section 5. - Where a Data Principal has given her consent for processing personal data before the commencement of this Act—
-  (a) the Data Fiduciary shall, as soon as reasonably practicable, give the Data Principal a notice with the above information;
-  (b) the Data Fiduciary may continue processing unless the Data Principal withdraws her consent.
-
-Sub-section (3) of Section 5. - The Data Fiduciary shall provide the notice in English or any language under the Eighth Schedule of the Constitution.
-
-Section 6. Consent.
-Sub-section (1) of Section 6. - Consent shall be free, specific, informed, unconditional, unambiguous, and signify agreement by clear affirmative action, limited to necessary personal data for the specified purpose.
-
-Sub-section (2) of Section 6. - Any infringing part of consent shall be invalid to the extent of infringement.
-
-Sub-section (3) of Section 6. - Every consent request must be in clear and plain language, accessible in English or Eighth Schedule languages, with Data Protection Officer contact where applicable.
-
-Sub-section (4) of Section 6. - Data Principals can withdraw consent anytime, with ease comparable to giving consent.
-
-Sub-section (5) of Section 6. - Withdrawal consequences must be borne by the Data Principal and do not affect prior lawful processing.
-
-Sub-section (6) of Section 6. - After withdrawal, Data Fiduciaries and Processors must cease processing unless otherwise required by law.
-
-Sub-section (7) of Section 6. - Consent can be managed through a Consent Manager registered with the Board.
-
-Sub-section (8) of Section 6. - Consent Managers act on behalf of Data Principals and are accountable to them.
-
-Sub-section (9) of Section 6. - Consent Managers must be registered as prescribed.
-
-Sub-section (10) of Section 6. - Data Fiduciary must prove that notice was given and consent was valid, if challenged.
-
-Section 7. Certain legitimate uses.
-Personal data may be processed without consent for:
-  (a) Voluntarily provided personal data for specified purposes without expressed objection.
-  (b) Subsidy, benefit, certificate, etc., provided by the State.
-  (c) Performance of State functions or in the interest of sovereignty, integrity, or security.
-  (d) Legal obligations to disclose information.
-  (e) Compliance with court orders or judgments.
-  (f) Medical emergencies.
-  (g) Public health emergencies.
-  (h) Disaster situations.
-  (i) Employment purposes like corporate espionage prevention.
-
-Section 8. General obligations of Data Fiduciary.
-Sub-section (1) of Section 8. - Data Fiduciary is responsible for compliance regardless of agreements with Processors.
-
-Sub-section (2) of Section 8. - Data Fiduciary may engage Processors only under valid contracts.
-
-Sub-section (3) of Section 8. - If personal data is used for decisions affecting Data Principals or disclosed, ensure completeness, accuracy, and consistency.
-
-Sub-section (4) of Section 8. - Implement technical and organisational measures to ensure compliance.
-
-Sub-section (5) of Section 8. - Protect personal data using reasonable security safeguards against breaches.
-
-Sub-section (6) of Section 8. - Notify the Board and affected Data Principals in case of breaches, as prescribed.
-
-Sub-section (7) of Section 8. - Erase personal data upon withdrawal of consent or when the specified purpose is no longer served, unless legally required to retain.
-
-Sub-section (8) of Section 8. - "Specified purpose no longer served" deemed if Data Principal does not approach the Fiduciary within prescribed time.
-
-Sub-section (9) of Section 8. - Publish business contact info of DPO or designated grievance redressal officer.
-
-Sub-section (10) of Section 8. - Establish an effective grievance redressal mechanism.
-
-Sub-section (11) of Section 8. - Clarification: lack of contact by Data Principal within time period implies specified purpose is no longer served.
-
-"""
 section_4_checklist = [
     "Personal data is processed only for a lawful purpose.",
     "Lawful purpose means a purpose not expressly forbidden by law.",
@@ -211,7 +131,7 @@ section_8_checklist = [
     
 def match_sentence_to_checklist4(sentence, checklist_items):
     prompt = f"""
-    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 4 (Grounds for Processing Personal Data)of the Digital Personal Data Protection Act, 2023 (India).
+    You are a DPDPA compliance expert. Your job is to determine whether the following policy sentence complies and fulfills any obligations listed under Section 4 (Grounds for Processing Personal Data) of the Digital Personal Data Protection Act, 2023 (India).
 
     ---
     
@@ -1098,18 +1018,23 @@ elif menu == "Policy Compliance Checker":
                     st.markdown(f"##### Analyzing: {section}")
                     try:
                         if section == "Section 4 — Grounds for Processing Personal Data":
+                            st.markdown(f"Inside if Analyzing: {section}")
                             validated_section = analyze_policy_section4(policy_text)
                             results.append(validated_section)
                         elif section == "Section 5 — Notice":
+                            st.markdown(f"Inside if Analyzing: {section}")
                             validated_section = analyze_policy_section5(policy_text)
                             results.append(validated_section)
                         elif section == "Section 6 — Consent":
+                            st.markdown(f"Inside if Analyzing: {section}")
                             validated_section = analyze_policy_section6(policy_text)
                             results.append(validated_section)
                         elif section == "Section 7 — Certain Legitimate Uses":
+                            st.markdown(f"Inside if Analyzing: {section}")
                             validated_section = analyze_policy_section7(policy_text)
                             results.append(validated_section)
                         elif section == "Section 8 — General Obligations of Data Fiduciary":
+                            st.markdown(f"Inside if Analyzing: {section}")
                             validated_section = analyze_policy_section8(policy_text)
                             results.append(validated_section)
 
