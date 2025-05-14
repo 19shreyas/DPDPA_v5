@@ -262,7 +262,7 @@ Processing without consent is allowed **only** if it meets the following (tick a
 10. ☐ Establish a grievance redressal mechanism."""
     
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0
     )
