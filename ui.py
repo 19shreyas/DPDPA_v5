@@ -175,15 +175,17 @@ def analyze_policy_section6(policy_text):
     match_results = []
 
     for sentence in policy_sentences:
+        if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
+            continue
         result = match_sentence_to_checklist(sentence, section_6_checklist)
-        for match in result["Matched Items"]:
+        for match in result.get("Matched Items", []):
             match_results.append({
-                "Sentence": sentence,
-                "Checklist Item": match["Checklist Item"],
-                "Justification": match["Justification"]
+                "Sentence": sentence.strip(),
+                "Checklist Item": match["Checklist Item"].strip(),
+                "Justification": match["Justification"].strip()
             })
 
-    # Deduplicate checklist items by keeping the first matched instance
+    # Deduplicate matched checklist items
     matched_items = {}
     for r in match_results:
         if r["Checklist Item"] not in matched_items:
@@ -214,14 +216,19 @@ def analyze_policy_section6(policy_text):
         points = 0.25
         severity = "Major"
 
-    # Suggested Rewrite
+    # Suggested Rewrites
     missing_items = [item for item in section_6_checklist if item not in matched_items]
-    suggested_rewrite = "\n".join([f"- Add a clear statement to address: {item}" for item in missing_items]) if missing_items else "All checklist items are covered."
+    if missing_items:
+        suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
+            "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
+    else:
+        suggested_rewrite = "All checklist items are covered."
 
+    # Final Output
     final_output = {
         "DPDPA Section": "Section 6 — Consent",
         "DPDPA Section Meaning": "This section outlines the requirements for obtaining and managing consent from data principals for the processing of their personal data.",
-        "Checklist Items Matched": list(matched_items.keys()),
+        "Checklist Items Matched": list(set(matched_items.keys())),
         "Matched Sentences": list(matched_items.values()),
         "Match Level": match_level,
         "Severity": severity,
@@ -229,7 +236,6 @@ def analyze_policy_section6(policy_text):
         "Suggested Rewrite": suggested_rewrite
     }
     return final_output
-
 
 
 # --- GPT Function ---
