@@ -213,71 +213,145 @@ If no checklist item is clearly satisfied, return: "Matched Items": []
 
 # --- Full analyzer using sentence loop for Section 6 only ---
 def analyze_policy_section6(policy_text):
-    policy_sentences = sent_tokenize(policy_text)
-    match_results = []
+    import re
+    from collections import defaultdict
 
-    for sentence in policy_sentences:
-        if len(sentence.strip().split()) < 5:  # Skip vague/short phrases
+    # Enhanced sentence tokenizer
+    def sent_tokenize(text):
+        text = text.replace('\r\n', '\n').replace('\r', '\n')
+        text = re.sub(r'\n+', '\n', text)
+        paragraphs = text.split('\n')
+        sentences = []
+        for para in paragraphs:
+            para = para.strip()
+            if not para:
+                continue
+            if re.search(r'[a-zA-Z0-9]{3,}', para):
+                sentences += re.split(r'(?<=[.!?]) +', para)
+            else:
+                sentences.append(para)
+        return [s.strip() for s in sentences if s.strip()]
+
+    # Checklist with IDs
+    section_6_checklist = [
+        {"id": "6.1", "item": "Consent is free, specific, informed, unconditional, and unambiguous."},
+        {"id": "6.2", "item": "Consent is given via clear affirmative action."},
+        {"id": "6.3", "item": "Consent is limited to specified purpose only."},
+        {"id": "6.4", "item": "Consent can be withdrawn at any time."},
+        {"id": "6.5", "item": "Data Fiduciary shall cease processing upon withdrawal (unless legally required)."},
+        {"id": "6.6", "item": "Consent Manager is registered and functions independently."},
+        {"id": "6.7", "item": "Consent Manager allows giving, managing, and withdrawing consent easily."},
+        {"id": "6.8", "item": "Consent Manager logs consent history for audit."},
+        {"id": "6.9", "item": "Data Fiduciary must honor withdrawal requests promptly."},
+        {"id": "6.10", "item": "Retention of personal data stops unless required by law."}
+    ]
+
+    def build_sentence_prompt(sentence, checklist_items):
+        checklist_str = "\n".join([f"{item['id']}. {item['item']}" for item in checklist_items])
+        return f"""
+You are a DPDPA Section 6 compliance analyst. Analyze the sentence below for matches against the checklist.
+
+SENTENCE:
+\"{sentence}\"
+
+CHECKLIST:
+{checklist_str}
+
+RULES:
+- Match ONLY if the sentence explicitly and clearly addresses the checklist item in legal terms.
+- Do NOT infer meaning, interpret behavior, or rely on vague wording.
+- Only match if the meaning is clear, contextual, and unambiguous.
+- For each match, include:
+  - checklist ID
+  - full checklist text
+  - justification
+  - whether it is a 'full' or 'partial' match
+
+OUTPUT FORMAT (JSON):
+{{
+  "Sentence": "...",
+  "Matched Items": [
+    {{
+      "Checklist ID": "...",
+      "Checklist Text": "...",
+      "Justification": "...",
+      "Match Type": "full" or "partial"
+    }}
+  ]
+}}
+
+If no match, return:
+{{
+  "Sentence": "...",
+  "Matched Items": []
+}}
+"""
+
+    def call_gpt(prompt):
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0
+        )
+        return json.loads(response.choices[0].message.content)
+
+    sentences = sent_tokenize(policy_text)
+    all_sentence_matches = []
+
+    for sentence in sentences:
+        if len(sentence.split()) < 5:
             continue
-        result = match_sentence_to_checklist(sentence, section_6_checklist)
-        for match in result.get("Matched Items", []):
-            match_results.append({
-                "Sentence": sentence.strip(),
-                "Checklist Item": match["Checklist Item"].strip(),
-                "Justification": match["Justification"].strip()
+        prompt = build_sentence_prompt(sentence, section_6_checklist)
+        result = call_gpt(prompt)
+        all_sentence_matches.append(result)
+
+    checklist_to_sentences = defaultdict(list)
+    for entry in all_sentence_matches:
+        for match in entry["Matched Items"]:
+            checklist_to_sentences[match["Checklist ID"]].append({
+                "Sentence": entry["Sentence"],
+                "Justification": match["Justification"],
+                "Match Type": match["Match Type"]
             })
 
-    # Deduplicate matched checklist items
-    matched_items = {}
-    for r in match_results:
-        if r["Checklist Item"] not in matched_items:
-            matched_items[r["Checklist Item"]] = r
+    final_output = []
+    for item in section_6_checklist:
+        checklist_id = item["id"]
+        matches = checklist_to_sentences.get(checklist_id, [])
+        final_output.append({
+            "Checklist ID": checklist_id,
+            "Checklist Text": item["item"],
+            "Matched Sentences": [m["Sentence"] for m in matches],
+            "Justifications": [m["Justification"] for m in matches],
+            "Match Types": [m["Match Type"] for m in matches],
+            "Status": "Matched" if matches else "Unmatched",
+            "Suggested Rewrite": "" if matches else f"Add clear policy line addressing: {item['item']}"
+        })
 
-    matched_count = len(matched_items)
+    matched_count = sum(1 for row in final_output if row["Status"] == "Matched")
     total_items = len(section_6_checklist)
-
-    # Classification logic
     if matched_count == total_items:
-        match_level = "Fully Compliant"
-        points = 1.0
-        severity = "N/A"
+        match_level, score, severity = "Fully Compliant", 1.0, "N/A"
     elif matched_count == 0:
-        match_level = "Non-Compliant"
-        points = 0.0
-        severity = "Major"
+        match_level, score, severity = "Non-Compliant", 0.0, "Major"
     elif matched_count == 1:
-        match_level = "Partially Compliant"
-        points = 0.75
-        severity = "Minor"
+        match_level, score, severity = "Partially Compliant", 0.75, "Minor"
     elif matched_count <= 3:
-        match_level = "Partially Compliant"
-        points = 0.5
-        severity = "Medium"
+        match_level, score, severity = "Partially Compliant", 0.5, "Medium"
     else:
-        match_level = "Partially Compliant"
-        points = 0.25
-        severity = "Major"
+        match_level, score, severity = "Partially Compliant", 0.25, "Major"
 
-    # Suggested Rewrites
-    missing_items = [item for item in section_6_checklist if item not in matched_items]
-    if missing_items:
-        suggested_rewrite = "### Suggested Rewrite for Missing Items:\n" + \
-            "\n".join([f"- Add this statement: *{item}*" for item in missing_items])
-    else:
-        suggested_rewrite = "All checklist items are covered."
-
-    # Final Output
-    final_output = {
+    return {
         "DPDPA Section": "Section 6 — Consent",
-        "DPDPA Section Meaning": "This section outlines the requirements for obtaining and managing consent from data principals for the processing of their personal data.",
-        "Checklist Items Matched": list(set(matched_items.keys())),
-        "Matched Sentences": list(matched_items.values()),
+        "DPDPA Section Meaning": "This section outlines how organizations must obtain, manage, and revoke consent from data principals under the DPDPA.",
+        "Checklist Items Matched": [row["Checklist ID"] for row in final_output if row["Status"] == "Matched"],
+        "Matched Sentences": final_output,
         "Match Level": match_level,
         "Severity": severity,
-        "Compliance Points": points,
-        "Suggested Rewrite": suggested_rewrite
+        "Compliance Points": score,
+        "Suggested Rewrite": "\n".join([row["Suggested Rewrite"] for row in final_output if row["Status"] == "Unmatched"])
     }
-    return final_output
+
 
 
 # --- GPT Function ---
