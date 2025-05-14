@@ -689,7 +689,8 @@ elif menu == "Policy Compliance Checker":
                 for row in results:
                     with st.expander(f"🔍 {row['DPDPA Section']} — Full Checklist & Suggestions"):
                         if row['DPDPA Section'] == "Section 6 — Consent" and "Checklist Items" not in row:
-                            st.markdown(f"**Match Level:** {row['Match Level']} | **Score:** {row['Compliance Score']}")
+                            # st.markdown(f"**Match Level:** {row['Match Level']} | **Score:** {row['Compliance Score']}")
+                            st.markdown(f"**Match Level:** {row.get('Match Level', '')} | **Score:** {row.get('Compliance Points', row.get('Compliance Score', 'N/A'))}")
                             st.markdown("**Matched Checklist Items:**")
                             for item in row["Checklist Items Matched"]:
                                 st.markdown(f"- ✅ {item}")
