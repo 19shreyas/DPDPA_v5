@@ -1155,16 +1155,51 @@ elif menu == "Policy Compliance Checker":
                                 st.markdown(f"- **Sentence:** {s['Sentence']}")
                                 st.markdown(f"  - **Checklist Item:** {s['Checklist Item']}")
                                 st.markdown(f"  - **Justification:** {s['Justification']}")
-                        else:
-                            st.markdown(f"**Meaning:** {row['DPDPA Section Meaning']}")
-                            st.markdown(f"**Match Level:** {row['Match Level']} | **Severity:** {row.get('Severity', '')}")
-                            st.markdown("**Checklist Items:**")
-                            for item in row["Checklist Items"]:
-                                st.markdown(f"- **{item['Item']}** → Matched: **{item['Matched']}**")
-                                st.markdown(f"  - Sentences: {item['Matched Sentences']}")
-                                st.markdown(f"  - Justification: {item['Justification']}")
-                            st.markdown("**Suggested Rewrite:**")
-                            st.markdown(row["Suggested Rewrite"])
+
+                        elif row['DPDPA Section'] == "Section 4 — Grounds for Processing Personal Data" and "Checklist Items" not in row:
+                            # st.markdown(f"**Match Level:** {row['Match Level']} | **Score:** {row['Compliance Score']}")
+                            st.markdown(f"**Match Level:** {row.get('Match Level', '')} | **Score:** {row.get('Compliance Points', row.get('Compliance Score', 'N/A'))}")
+                            st.markdown("**Matched Checklist Items:**")
+                            for item in row["Checklist Items Matched"]:
+                                st.markdown(f"- ✅ {item}")
+                            st.markdown("**Matched Sentences & Justifications:**")
+                            for s in row["Matched Sentences"]:
+                                st.markdown(f"- **Sentence:** {s['Sentence']}")
+                                st.markdown(f"  - **Checklist Item:** {s['Checklist Item']}")
+                                st.markdown(f"  - **Justification:** {s['Justification']}")
+                        elif row['DPDPA Section'] == "Section 5 — Notice" and "Checklist Items" not in row:
+                            # st.markdown(f"**Match Level:** {row['Match Level']} | **Score:** {row['Compliance Score']}")
+                            st.markdown(f"**Match Level:** {row.get('Match Level', '')} | **Score:** {row.get('Compliance Points', row.get('Compliance Score', 'N/A'))}")
+                            st.markdown("**Matched Checklist Items:**")
+                            for item in row["Checklist Items Matched"]:
+                                st.markdown(f"- ✅ {item}")
+                            st.markdown("**Matched Sentences & Justifications:**")
+                            for s in row["Matched Sentences"]:
+                                st.markdown(f"- **Sentence:** {s['Sentence']}")
+                                st.markdown(f"  - **Checklist Item:** {s['Checklist Item']}")
+                                st.markdown(f"  - **Justification:** {s['Justification']}"
+                        elif row['DPDPA Section'] == "Section 7 — Certain Legitimate Uses" and "Checklist Items" not in row:
+                            # st.markdown(f"**Match Level:** {row['Match Level']} | **Score:** {row['Compliance Score']}")
+                            st.markdown(f"**Match Level:** {row.get('Match Level', '')} | **Score:** {row.get('Compliance Points', row.get('Compliance Score', 'N/A'))}")
+                            st.markdown("**Matched Checklist Items:**")
+                            for item in row["Checklist Items Matched"]:
+                                st.markdown(f"- ✅ {item}")
+                            st.markdown("**Matched Sentences & Justifications:**")
+                            for s in row["Matched Sentences"]:
+                                st.markdown(f"- **Sentence:** {s['Sentence']}")
+                                st.markdown(f"  - **Checklist Item:** {s['Checklist Item']}")
+                                st.markdown(f"  - **Justification:** {s['Justification']}"
+                        elif row['DPDPA Section'] == "Section 8 — General Obligations of Data Fiduciary" and "Checklist Items" not in row:
+                            # st.markdown(f"**Match Level:** {row['Match Level']} | **Score:** {row['Compliance Score']}")
+                            st.markdown(f"**Match Level:** {row.get('Match Level', '')} | **Score:** {row.get('Compliance Points', row.get('Compliance Score', 'N/A'))}")
+                            st.markdown("**Matched Checklist Items:**")
+                            for item in row["Checklist Items Matched"]:
+                                st.markdown(f"- ✅ {item}")
+                            st.markdown("**Matched Sentences & Justifications:**")
+                            for s in row["Matched Sentences"]:
+                                st.markdown(f"- **Sentence:** {s['Sentence']}")
+                                st.markdown(f"  - **Checklist Item:** {s['Checklist Item']}")
+                                st.markdown(f"  - **Justification:** {s['Justification']}"
 
             
                 # Excel Download
