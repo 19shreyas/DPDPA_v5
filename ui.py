@@ -1125,7 +1125,7 @@ elif menu == "Policy Compliance Checker":
                             for s in row["Matched Sentences"]:
                                 st.markdown(f"- **Sentence:** {s['Sentence']}")
                                 st.markdown(f"  - **Checklist Item:** {s['Checklist Item']}")
-                                st.markdown(f"  - **Justification:** {s['Justification']}"
+                                st.markdown(f"  - **Justification:** {s['Justification']}")
 
             
                 # Excel Download
